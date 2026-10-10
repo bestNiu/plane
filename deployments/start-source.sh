@@ -8,3 +8,11 @@ if ! docker inspect "$relay" --format '{{json .NetworkSettings.Networks}}' | gre
   docker network connect --alias pg-egress --gw-priority -1 plane-source_default "$relay"
 fi
 "${compose[@]}" up -d
+# This host only permits Internet egress through Docker's built-in bridge.
+# Keep the Plane network for service discovery and use bridge for SMTP egress.
+for service in api worker beat-worker; do
+  container=$("${compose[@]}" ps -q "$service")
+  if ! docker inspect "$container" --format '{{json .NetworkSettings.Networks}}' | grep -q '"bridge"'; then
+    docker network connect --gw-priority 1 bridge "$container"
+  fi
+done

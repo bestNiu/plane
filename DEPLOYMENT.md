@@ -49,6 +49,15 @@ Redis、RabbitMQ、对象存储均在项目独立网络内，无宿主机端口�
 
 当前使用 HTTP，且数据库连接不加密；正式公网使用前建议配置 HTTPS 并启用 RDS SSL。更换访问地址时需要同步更新 API 的 URL/CORS 配置以及 Live CORS 配置。
 
+## 邮件配置
+
+Plane 通知/邀请使用 SMTP，不使用 IMAP。网易企业邮箱使用 `smtp.qiye.163.com:465`，启用 SSL（`EMAIL_USE_SSL=1`），关闭 STARTTLS（`EMAIL_USE_TLS=0`）。参考 `deployments/env/mail.env.example`；真实授权码只保存在被忽略的本机配置及 Plane 加密数据库字段中，不提交到 Git。
+
+在 God mode 的邮件设置中配置账号、授权码、服务器、端口和发件人。已有实例默认优先读取数据库配置，仅修改环境变量不会覆盖数据库中的旧值。本机 `.deploy/mail.env` 保存邮件参数，同时已同步至 `apps/api/.env` 和 Plane 实例配置。
+
+本机私有网桥无法直连 SMTP，`start-source.sh` 会为 API、worker、beat-worker 附加 Docker 默认网桥，并将其设为出站网关；内部服务通信仍使用 Plane 私有网络。容器重建后应使用该脚本启动以恢复出站连接。SSL 证书校验保持启用。
+
+
 ## 二开工作流
 
 ```bash
