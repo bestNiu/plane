@@ -34,6 +34,9 @@ yarn-error.log*
 pnpm-debug.log*
 .pnpm-debug.log*
 
+# Local deployment runtime configuration and credentials
+.deploy/
+
 # Local env files
 .env
 .env.local

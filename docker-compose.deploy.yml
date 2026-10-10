@@ -1,0 +1,136 @@
+name: plane-source
+
+x-api: &api
+  image: plane-source-api:local
+  build:
+    context: ./apps/api
+    dockerfile: Dockerfile.api
+  env_file: ./apps/api/.env
+  restart: unless-stopped
+  depends_on:
+    pg-egress:
+      condition: service_started
+    plane-redis:
+      condition: service_healthy
+    plane-mq:
+      condition: service_healthy
+
+services:
+  pg-egress:
+    image: python:3.12-slim
+    network_mode: bridge
+    command: python /relay.py
+    env_file: ./.deploy/relay.env
+    volumes:
+      - ./deployments/pg-egress.py:/relay.py:ro
+    restart: unless-stopped
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile.web
+    restart: unless-stopped
+  admin:
+    build:
+      context: .
+      dockerfile: apps/admin/Dockerfile.admin
+    restart: unless-stopped
+  space:
+    build:
+      context: .
+      dockerfile: apps/space/Dockerfile.space
+    restart: unless-stopped
+  api:
+    <<: *api
+    command: ./bin/docker-entrypoint-api.sh
+    depends_on:
+      plane-redis:
+        condition: service_healthy
+      plane-mq:
+        condition: service_healthy
+      migrator:
+        condition: service_completed_successfully
+  worker:
+    <<: *api
+    command: /bin/bash -c 'python manage.py wait_for_db && python manage.py wait_for_migrations && exec celery -A plane worker -l info --concurrency=2'
+    depends_on:
+      api:
+        condition: service_started
+  beat-worker:
+    <<: *api
+    command: ./bin/docker-entrypoint-beat.sh
+    depends_on:
+      api:
+        condition: service_started
+  migrator:
+    <<: *api
+    command: ./bin/docker-entrypoint-migrator.sh
+    restart: "no"
+  live:
+    build:
+      context: .
+      dockerfile: apps/live/Dockerfile.live
+    env_file: ./.deploy/live.env
+    restart: unless-stopped
+    depends_on:
+      plane-redis:
+        condition: service_healthy
+  plane-redis:
+    image: valkey/valkey:7.2.11-alpine
+    restart: unless-stopped
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: [CMD, valkey-cli, ping]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  plane-mq:
+    image: rabbitmq:3.13.6-management-alpine
+    env_file: ./.deploy/runtime.env
+    restart: unless-stopped
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: [CMD, rabbitmq-diagnostics, -q, ping]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+  plane-minio:
+    image: docker.io/pgsty/silo:RELEASE.2026-09-16T00-00-00Z
+    command: server /export --console-address ":9090"
+    env_file: ./.deploy/runtime.env
+    restart: unless-stopped
+    volumes:
+      - uploads:/export
+  proxy:
+    build:
+      context: apps/proxy
+      dockerfile: Dockerfile.ce
+    env_file: ./.deploy/runtime.env
+    restart: unless-stopped
+    ports:
+      - "8090:80"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+      - admin
+      - space
+      - api
+      - live
+      - plane-minio
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.24.0.0/16
+          gateway: 172.24.0.1
+
+volumes:
+  redisdata:
+  rabbitmq_data:
+  uploads:
+  caddy_data:
+  caddy_config:

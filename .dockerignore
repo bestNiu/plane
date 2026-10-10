@@ -46,6 +46,8 @@ storybook-static/
 *.tsbuildinfo
 
 # Local env and secrets
+.deploy/
+**/.env
 .env.local
 .env.development.local
 .env.test.local
