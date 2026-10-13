@@ -8,9 +8,7 @@ import { observer } from "mobx-react";
 import { CircleDashed, Microscope } from "lucide-react";
 import { AlertOctagonOutline, BarOutline, FolderOutline, SearchOutline } from "@makeplane/propel/icons";
 // plane imports
-import { MARKETING_PRICING_PAGE_LINK } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
-import { Button } from "@makeplane/propel/components/button";
 import { ContentWrapper } from "@plane/blocks/layout";
 import { cn } from "@plane/utils";
 // assets
@@ -20,8 +18,6 @@ import ctaR1Dark from "@/app/assets/workspace-active-cycles/cta-r-1-dark.webp?ur
 import ctaR1Light from "@/app/assets/workspace-active-cycles/cta-r-1-light.webp?url";
 import ctaR2Dark from "@/app/assets/workspace-active-cycles/cta-r-2-dark.webp?url";
 import ctaR2Light from "@/app/assets/workspace-active-cycles/cta-r-2-light.webp?url";
-// components
-import { ProIcon } from "@/components/common/pro-icon";
 // hooks
 import { useUser } from "@/hooks/store/user";
 
@@ -89,19 +85,6 @@ export const WorkspaceActiveCyclesUpgrade = observer(function WorkspaceActiveCyc
           <div className="flex max-w-64 flex-col gap-2">
             <h2 className="text-20 font-semibold">{t("on_demand_snapshots_of_all_your_cycles")}</h2>
             <p className="text-14 font-medium text-tertiary">{t("active_cycles_description")}</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button
-              variant="primary"
-              size="sm"
-              stretch="auto"
-              nativeButton={false}
-              render={
-                <a href={MARKETING_PRICING_PAGE_LINK} target="_blank" rel="noreferrer" aria-label={t("upgrade")} />
-              }
-              icon={<ProIcon className="h-3.5 w-3.5 text-on-color" />}
-              label={t("upgrade")}
-            />
           </div>
           <span className="absolute top-0 left-0">
             <img

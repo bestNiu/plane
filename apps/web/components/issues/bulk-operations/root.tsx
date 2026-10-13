@@ -7,8 +7,6 @@
 import { observer } from "mobx-react";
 // ui
 import { Banner } from "@makeplane/propel/components/banner";
-import { Button } from "@makeplane/propel/components/button";
-import { MARKETING_PLANE_ONE_PAGE_LINK } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import { cn } from "@plane/utils";
 // hooks
@@ -36,23 +34,6 @@ export const IssueBulkOperationsRoot = observer(function IssueBulkOperationsRoot
         variant="accent"
         icon={null}
         title={t("bulk_operations.upgrade_banner.message")}
-        actions={
-          <Button
-            variant="primary"
-            size="sm"
-            stretch="auto"
-            label={t("bulk_operations.upgrade_banner.cta")}
-            nativeButton={false}
-            render={
-              <a
-                href={MARKETING_PLANE_ONE_PAGE_LINK}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={t("bulk_operations.upgrade_banner.cta")}
-              />
-            }
-          />
-        }
         render={<div className="w-full" />}
       />
     </div>

@@ -6,13 +6,7 @@
 
 import { observer } from "mobx-react";
 // plane imports
-import {
-  SUBSCRIPTION_REDIRECTION_URLS,
-  SUBSCRIPTION_WITH_BILLING_FREQUENCY,
-  TALK_TO_SALES_URL,
-} from "@plane/constants";
-import { useTranslation } from "@plane/i18n";
-import { Button } from "@makeplane/propel/components/button";
+import { SUBSCRIPTION_WITH_BILLING_FREQUENCY } from "@plane/constants";
 import type { TBillingFrequency } from "@plane/types";
 import { EProductSubscriptionEnum } from "@plane/types";
 import { getSubscriptionName } from "@plane/utils";
@@ -31,8 +25,6 @@ type TPlanDetailProps = {
 
 export const PlanDetail = observer(function PlanDetail(props: TPlanDetailProps) {
   const { subscriptionType, planDetail, billingFrequency, setBillingFrequency } = props;
-  // plane hooks
-  const { t } = useTranslation();
   // subscription details
   const subscriptionName = getSubscriptionName(subscriptionType);
   const isSubscriptionActive = planDetail.isActive;
@@ -43,14 +35,6 @@ export const PlanDetail = observer(function PlanDetail(props: TPlanDetailProps) 
     billingFrequency === "month"
       ? planDetail.monthlyPriceSecondaryDescription
       : planDetail.yearlyPriceSecondaryDescription;
-
-  const handleRedirection = () => {
-    const frequency = billingFrequency ?? "year";
-    // Get the redirection URL based on the subscription type and billing frequency
-    const redirectUrl = SUBSCRIPTION_REDIRECTION_URLS[subscriptionType][frequency] ?? TALK_TO_SALES_URL;
-    // Open the URL in a new tab
-    window.open(redirectUrl, "_blank");
-  };
 
   return (
     <div className="col-span-1 flex flex-col justify-between space-y-0.5 p-3">
@@ -97,17 +81,6 @@ export const PlanDetail = observer(function PlanDetail(props: TPlanDetailProps) 
           />
         </div>
       )}
-
-      {/* Subscription button */}
-      <div className="flex flex-col items-start gap-1 py-3">
-        <Button
-          variant="primary"
-          size="md"
-          stretch="full"
-          label={isSubscriptionActive ? `Upgrade to ${subscriptionName}` : t("common.upgrade_cta.talk_to_sales")}
-          onClick={handleRedirection}
-        />
-      </div>
     </div>
   );
 });
