@@ -6,10 +6,9 @@
 
 import { GOD_MODE_URL } from "@plane/constants";
 // assets
-import GradientLogo from "@/app/assets/auth/gradient-logo.webp?url";
-import GradientBgLogo from "@/app/assets/auth/gradient-bg-logo.webp?url";
+import UnionclinTaskMark from "@/app/assets/auth/unionclintask-mark.png?url";
 import DefaultLayout from "@/layouts/default-layout";
-import { PlaneLockup } from "@plane/blocks/icons";
+import { UnionclinTaskLockup } from "@/components/common/unionclintask-logo";
 import { Button } from "@makeplane/propel/components/button";
 
 export function InstanceNotReady() {
@@ -18,27 +17,27 @@ export function InstanceNotReady() {
       <div className="relative z-10 flex h-screen w-screen overflow-hidden">
         {/* Background decorations */}
         <img
-          src={GradientBgLogo}
-          className="pointer-events-none absolute -top-24 -left-32 h-56 w-96 opacity-15"
+          src={UnionclinTaskMark}
+          className="pointer-events-none absolute -top-24 -left-32 h-56 w-96 object-contain opacity-15"
           alt=""
           aria-hidden="true"
         />
         <img
-          src={GradientBgLogo}
-          className="pointer-events-none absolute -right-20 -bottom-16 h-56 w-96 opacity-15"
+          src={UnionclinTaskMark}
+          className="pointer-events-none absolute -right-20 -bottom-16 h-56 w-96 object-contain opacity-15"
           alt=""
           aria-hidden="true"
         />
         {/* Main content */}
         <div className="flex h-full w-full flex-col items-center px-8 pt-6 pb-10">
           <div className="sticky top-0 flex w-full shrink-0 items-center justify-between gap-6">
-            <PlaneLockup height={20} width={95} className="text-primary" />
+            <UnionclinTaskLockup height={20} width={95} className="text-primary" />
           </div>
           <div className="flex h-full w-full flex-col items-center justify-center gap-7">
             <div className="flex flex-col items-center gap-11">
-              <img src={GradientLogo} className="h-24 w-40 object-contain" alt="Plane Logo" />
+              <img src={UnionclinTaskMark} className="h-24 w-40 object-contain" alt="UnionclinTask Logo" />
               <div className="flex max-w-124 flex-col items-center gap-3">
-                <h1 className="text-h2-semibold text-primary">Welcome to Plane</h1>
+                <h1 className="text-h2-semibold text-primary">Welcome to UnionclinTask</h1>
                 <p className="text-center text-body-md-regular text-secondary">
                   Set up your instance and create your first workspace to begin managing projects and work.
                 </p>

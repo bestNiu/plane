@@ -82,7 +82,7 @@ function WorkspaceInvitationPage() {
           ) : (
             <EmptySpace
               title={`You have been invited to ${invitationDetail.workspace.name}`}
-              description="Your workspace is where you'll create projects, collaborate on your work items, and organize different streams of work in your Plane account."
+              description="Your workspace is where you'll create projects, collaborate on your work items, and organize different streams of work in your UnionclinTask account."
             >
               <EmptySpaceItem Icon={TickOutline} title="Accept" action={handleAccept} />
               <EmptySpaceItem Icon={CloseOutline} title="Ignore" action={handleReject} />
@@ -92,14 +92,14 @@ function WorkspaceInvitationPage() {
           invitationDetail?.accepted ? (
             <EmptySpace
               title={`You are already a member of ${invitationDetail.workspace.name}`}
-              description="Your workspace is where you'll create projects, collaborate on your work items, and organize different streams of work in your Plane account."
+              description="Your workspace is where you'll create projects, collaborate on your work items, and organize different streams of work in your UnionclinTask account."
             >
               <EmptySpaceItem Icon={BoxesOutline} title="Continue to home" href="/" />
             </EmptySpace>
           ) : (
             <EmptySpace
               title="This invitation link is not active anymore."
-              description="Your workspace is where you'll create projects, collaborate on your work items, and organize different streams of work in your Plane account."
+              description="Your workspace is where you'll create projects, collaborate on your work items, and organize different streams of work in your UnionclinTask account."
               link={{ text: "Or start from an empty project", href: "/" }}
             >
               {!currentUser ? (

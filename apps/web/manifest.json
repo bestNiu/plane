@@ -4,9 +4,9 @@
   "display": "standalone",
   "scope": "/",
   "start_url": "/",
-  "name": "Plane | Accelerate software development with peace.",
-  "short_name": "Plane",
-  "description": "Plane accelerated the software development by order of magnitude for agencies and product companies.",
+  "name": "UnionclinTask",
+  "short_name": "UnionclinTask",
+  "description": "UnionclinTask helps you plan and track your work items, cycles, and modules.",
   "icons": [
     {
       "src": "/icon-192x192.png",

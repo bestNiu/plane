@@ -4,7 +4,7 @@
  * See the LICENSE file for details.
  */
 
-import { DocumentationOutline, RocketOutline } from "@makeplane/propel/icons";
+import { RocketOutline } from "@makeplane/propel/icons";
 // components
 import type { TPowerKCommandConfig } from "@/components/power-k/core/types";
 // hooks
@@ -26,19 +26,6 @@ export const usePowerKHelpCommands = (): TPowerKCommandConfig[] => {
       icon: RocketOutline,
       modifierShortcut: "cmd+/",
       action: () => toggleShortcutsListModal(true),
-      isEnabled: () => true,
-      isVisible: () => true,
-      closeOnSelect: true,
-    },
-    {
-      id: "open_plane_documentation",
-      type: "action",
-      group: "help",
-      i18n_title: "power_k.help_actions.open_plane_documentation",
-      icon: DocumentationOutline,
-      action: () => {
-        window.open("https://docs.plane.so/", "_blank", "noopener,noreferrer");
-      },
       isEnabled: () => true,
       isVisible: () => true,
       closeOnSelect: true,

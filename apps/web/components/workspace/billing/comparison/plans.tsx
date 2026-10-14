@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-present Plane Software, Inc. and contributors
+ * Copyright (c) 2023-present UnionclinTask Software, Inc. and contributors
  * SPDX-License-Identifier: AGPL-3.0-only
  * See the LICENSE file for details.
  */
@@ -98,7 +98,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       },
       {
         title: "Comments",
-        description: "Respond to work items, @mention members, and brainstorm\ntogether without leaving Plane.",
+        description: "Respond to work items, @mention members, and brainstorm\ntogether without leaving UnionclinTask.",
         cloud: {
           free: true,
           one: true,
@@ -537,7 +537,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       {
         title: "Progress Charts",
         description:
-          "Track progress in cycles, modules, and overviews\nthroughout Plane without switching to dashboards\nor Analytics.",
+          "Track progress in cycles, modules, and overviews\nthroughout UnionclinTask without switching to dashboards\nor Analytics.",
         cloud: {
           free: false,
           one: false,
@@ -613,7 +613,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
     features: [
       {
         title: "Power K",
-        description: "Access a keyboard-first gateway to almost anything\nin Plane.",
+        description: "Access a keyboard-first gateway to almost anything\nin UnionclinTask.",
         cloud: {
           free: true,
           one: true,
@@ -657,7 +657,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       {
         title: "PQL",
         description:
-          "Write Plane Query Language in search with support\nfor Boolean operators. Soon, you can write natural\nlanguage queries.",
+          "Write UnionclinTask Query Language in search with support\nfor Boolean operators. Soon, you can write natural\nlanguage queries.",
         cloud: {
           free: false,
           one: false,
@@ -749,7 +749,8 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       },
       {
         title: "API-enabled Audit Logs",
-        description: "See a full-workspace audit log and use APIs to flag\nPlane activity in compliance systems.",
+        description:
+          "See a full-workspace audit log and use APIs to flag\nUnionclinTask activity in compliance systems.",
         comingSoon: true,
         cloud: {
           free: false,
@@ -968,7 +969,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       {
         title: "GitHub",
         description:
-          "Sync Plane work items and states to GitHub work items and\nstates. Update GitHub automatically with activity\nfrom Plane and vice-versa.",
+          "Sync UnionclinTask work items and states to GitHub work items and\nstates. Update GitHub automatically with activity\nfrom UnionclinTask and vice-versa.",
         cloud: {
           free: false,
           one: false,
@@ -979,7 +980,8 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       },
       {
         title: "Slack",
-        description: "Get Plane activity in Slack and use / commands in\nSlack to make changes in Plane.",
+        description:
+          "Get UnionclinTask activity in Slack and use / commands in\nSlack to make changes in UnionclinTask.",
         cloud: {
           free: false,
           one: false,
@@ -1001,7 +1003,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       },
       {
         title: "Zendesk",
-        description: "Create Plane work items from Zendesk tickets.",
+        description: "Create UnionclinTask work items from Zendesk tickets.",
         cloud: {
           free: false,
           one: false,
@@ -1012,7 +1014,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       },
       {
         title: "Freshdesk",
-        description: "Create Plane work items from Freshdesk tickets.",
+        description: "Create UnionclinTask work items from Freshdesk tickets.",
         cloud: {
           free: false,
           one: false,
@@ -1058,7 +1060,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
     features: [
       {
         title: "SAML",
-        description: "Get the officially supported SAML implementation\nand make Plane secure with any IdP.",
+        description: "Get the officially supported SAML implementation\nand make UnionclinTask secure with any IdP.",
         cloud: {
           free: false,
           one: true,
@@ -1069,7 +1071,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       },
       {
         title: "OIDC",
-        description: "Get the officially supported OIDC implementation\nand make Plane secure with any IdP.",
+        description: "Get the officially supported OIDC implementation\nand make UnionclinTask secure with any IdP.",
         selfHostedOnly: true,
         cloud: {
           free: false,
@@ -1082,7 +1084,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       {
         title: "Domain Security",
         description:
-          "Choose other domains that can authenticate into\nyour Plane workspace or restrict all but one domain.",
+          "Choose other domains that can authenticate into\nyour UnionclinTask workspace or restrict all but one domain.",
         cloud: {
           free: false,
           one: false,
@@ -1093,7 +1095,8 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       },
       {
         title: "Two-factor authentication and passkeys",
-        description: "Secure your Plane workspace with device-\ndependent two-factor authentication and passkeys. ",
+        description:
+          "Secure your UnionclinTask workspace with device-\ndependent two-factor authentication and passkeys. ",
         cloud: {
           free: false,
           one: false,
@@ -1115,7 +1118,8 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       },
       {
         title: "LDAP",
-        description: "Get our official LDAP implementation and secure\nyour Plane workspace with your LDAP server.",
+        description:
+          "Get our official LDAP implementation and secure\nyour UnionclinTask workspace with your LDAP server.",
         comingSoon: true,
         cloud: {
           free: false,
@@ -1134,7 +1138,7 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
     features: [
       {
         title: "God Mode",
-        description: "Manage your self-hosted Plane instance better with\nan instance admin interface.",
+        description: "Manage your self-hosted UnionclinTask instance better with\nan instance admin interface.",
         cloud: {
           free: true,
           one: true,
@@ -1145,7 +1149,8 @@ export const PLANS_COMPARISON_LIST: TPlansComparisonDetails[] = [
       },
       {
         title: "One-click Deployment",
-        description: "Install and deploy your self-hosted Plane to any\nprivate cloud with a single-line command.",
+        description:
+          "Install and deploy your self-hosted UnionclinTask to any\nprivate cloud with a single-line command.",
         cloud: {
           free: false,
           one: true,

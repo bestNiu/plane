@@ -9,7 +9,6 @@ import { observer } from "mobx-react";
 import { useSearchParams } from "next/navigation";
 // plane imports
 import { Banner } from "@makeplane/propel/components/banner";
-import { OAuthOptions } from "@plane/blocks/auth";
 import { useTranslation } from "@plane/i18n";
 // helpers
 import type { TAuthErrorInfo } from "@/helpers/authentication.helper";
@@ -21,7 +20,6 @@ import {
   authErrorHandler,
 } from "@/helpers/authentication.helper";
 // hooks
-import { useOAuthConfig } from "@/hooks/oauth";
 import { useInstance } from "@/hooks/store/use-instance";
 // local imports
 import { TermsAndConditions } from "../terms-and-conditions";
@@ -52,10 +50,9 @@ export const AuthRoot = observer(function AuthRoot(props: TAuthRoot) {
   // translation
   const { t } = useTranslation();
   // derived values
-  const oAuthActionText = authMode === EAuthModes.SIGN_UP ? "Sign up" : "Sign in";
-  const { isOAuthEnabled, oAuthOptions } = useOAuthConfig(oAuthActionText);
+  // White-label: third-party OAuth (Google/GitHub/GitLab) login is hidden; only email/magic-code auth remains.
   const isEmailBasedAuthEnabled = config?.is_email_password_enabled || config?.is_magic_login_enabled;
-  const noAuthMethodsAvailable = !isOAuthEnabled && !isEmailBasedAuthEnabled;
+  const noAuthMethodsAvailable = !isEmailBasedAuthEnabled;
 
   useEffect(() => {
     if (!authMode && currentAuthMode) setAuthMode(currentAuthMode);
@@ -135,13 +132,6 @@ export const AuthRoot = observer(function AuthRoot(props: TAuthRoot) {
         authMode={authMode}
         currentAuthStep={authStep}
       />
-      {isOAuthEnabled && (
-        <OAuthOptions
-          options={oAuthOptions}
-          compact={authStep === EAuthSteps.PASSWORD}
-          showDivider={isEmailBasedAuthEnabled}
-        />
-      )}
       {isEmailBasedAuthEnabled && (
         <AuthFormRoot
           authStep={authStep}
