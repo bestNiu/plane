@@ -14,7 +14,7 @@ from django.template.loader import render_to_string
 
 # Module imports
 from plane.license.utils.instance_value import get_email_configuration
-from plane.utils.email import generate_plain_text_from_html
+from plane.utils.email import attach_brand_logo, generate_plain_text_from_html
 from plane.utils.exception_logger import log_exception
 
 
@@ -55,6 +55,7 @@ def send_email_update_magic_code(email, token):
             connection=connection,
         )
         msg.attach_alternative(html_content, "text/html")
+        attach_brand_logo(msg)
         msg.send()
         logging.getLogger("plane.worker").info("Email sent successfully.")
         return
@@ -83,7 +84,7 @@ def send_email_update_confirmation(email):
         ) = get_email_configuration()
 
         # Send the confirmation email
-        subject = "Plane email address successfully updated"
+        subject = "UnionclinTask email address successfully updated"
         context = {"email": email}
 
         html_content = render_to_string("emails/user/email_updated.html", context)
@@ -106,6 +107,7 @@ def send_email_update_confirmation(email):
             connection=connection,
         )
         msg.attach_alternative(html_content, "text/html")
+        attach_brand_logo(msg)
         msg.send()
         logging.getLogger("plane.worker").info(f"Email update confirmation sent successfully to {email}.")
         return

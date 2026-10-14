@@ -50,7 +50,7 @@ from plane.db.models import (
     IssueAssignee,
 )
 from plane.license.utils.instance_value import get_email_configuration
-from plane.utils.email import generate_plain_text_from_html
+from plane.utils.email import attach_brand_logo, generate_plain_text_from_html
 from plane.utils.exception_logger import log_exception
 from plane.utils.url_security import pinned_fetch
 
@@ -225,6 +225,7 @@ def send_webhook_deactivation_email(webhook_id: str, receiver_id: str, current_s
             connection=connection,
         )
         msg.attach_alternative(html_content, "text/html")
+        attach_brand_logo(msg)
         msg.send()
         logger.info("Email sent successfully.")
     except Exception as e:

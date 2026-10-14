@@ -16,7 +16,7 @@ from django.template.loader import render_to_string
 # Module imports
 from plane.db.models import Project, ProjectMemberInvite, User
 from plane.license.utils.instance_value import get_email_configuration
-from plane.utils.email import generate_plain_text_from_html
+from plane.utils.email import attach_brand_logo, generate_plain_text_from_html
 from plane.utils.exception_logger import log_exception
 
 
@@ -30,7 +30,7 @@ def project_invitation(email, project_id, token, current_site, invitor):
         relativelink = f"/project-invitations/?invitation_id={project_member_invite.id}&email={email}&slug={project.workspace.slug}&project_id={str(project_id)}"  # noqa: E501
         abs_url = current_site + relativelink
 
-        subject = f"{user.first_name or user.display_name or user.email} invited you to join {project.name} on Plane"
+        subject = f"{user.first_name or user.display_name or user.email} invited you to join {project.name} on UnionclinTask"
 
         context = {
             "email": email,
@@ -76,6 +76,7 @@ def project_invitation(email, project_id, token, current_site, invitor):
         )
 
         msg.attach_alternative(html_content, "text/html")
+        attach_brand_logo(msg)
         msg.send()
         logging.getLogger("plane.worker").info("Email sent successfully.")
         return

@@ -1,6 +1,15 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
-<html>
-    <p>This is a test email sent to verify if email configuration is working as expected in your Plane instance.</p>
-
-<p>Regards,</br> Team Plane </p>
-</html>
+{% extends "emails/_brand_base.html" %}
+{% block title %}Test email{% endblock %}
+{% block content %}
+<h1 style="margin: 0 0 12px; font-size: 20px; line-height: 1.35; font-weight: 600; color: #111827;">
+  Test email
+</h1>
+<p style="margin: 0; font-size: 14px; line-height: 1.6; color: #4b5563;">
+  This is a test email sent to verify that email configuration is working as expected in your
+  UnionclinTask instance.
+</p>
+<p style="margin: 20px 0 0; font-size: 14px; line-height: 1.6; color: #4b5563;">
+  Regards,<br />
+  Team UnionclinTask
+</p>
+{% endblock %}

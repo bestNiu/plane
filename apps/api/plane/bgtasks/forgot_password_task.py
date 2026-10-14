@@ -15,7 +15,7 @@ from django.template.loader import render_to_string
 
 # Module imports
 from plane.license.utils.instance_value import get_email_configuration
-from plane.utils.email import generate_plain_text_from_html
+from plane.utils.email import attach_brand_logo, generate_plain_text_from_html
 from plane.utils.exception_logger import log_exception
 
 
@@ -35,7 +35,7 @@ def forgot_password(first_name, email, uidb64, token, current_site):
             EMAIL_FROM,
         ) = get_email_configuration()
 
-        subject = "A new password to your Plane account has been requested"
+        subject = "A new password to your UnionclinTask account has been requested"
 
         context = {
             "first_name": first_name,
@@ -64,6 +64,7 @@ def forgot_password(first_name, email, uidb64, token, current_site):
             connection=connection,
         )
         msg.attach_alternative(html_content, "text/html")
+        attach_brand_logo(msg)
         msg.send()
         logging.getLogger("plane.worker").info("Email sent successfully")
         return
