@@ -38,6 +38,12 @@ class InitSourceTests(unittest.TestCase):
         api_secret = next(row for row in api.splitlines() if row.startswith("LIVE_SERVER_SECRET_KEY="))
         self.assertIn(api_secret, (init_source.ROOT / ".deploy/live.env").read_text())
 
+    def test_renders_public_host_for_caddy(self):
+        init_source.generate(self.args, "password")
+        conf = init_source.ROOT / ".deploy/conf.d/public-host.conf"
+        self.assertEqual(conf.stat().st_mode & 0o777, 0o600)
+        self.assertIn("request_header Host localhost:8090\n", conf.read_text())
+
     def test_refuses_overwriting_configuration(self):
         init_source.generate(self.args, "password")
         path = init_source.ROOT / "apps/api/.env"

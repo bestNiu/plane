@@ -113,6 +113,10 @@ services:
     volumes:
       - caddy_data:/data
       - caddy_config:/config
+      # Bind mounts keep Caddyfile edits off the image build path: `up -d proxy`
+      # is enough, no xcaddy rebuild.
+      - ./apps/proxy/Caddyfile.ce:/etc/caddy/Caddyfile:ro
+      - ./.deploy/conf.d:/etc/caddy/conf.d:ro
     depends_on:
       - web
       - admin

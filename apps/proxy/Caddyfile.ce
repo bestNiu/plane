@@ -35,5 +35,9 @@
 }
 
 {$SITE_ADDRESS} {
+	# Optional deployment overrides mounted at /etc/caddy/conf.d, e.g. restoring
+	# the public Host when a TLS proxy in front of Caddy forwards it without the
+	# port. A glob that matches nothing is a no-op, so this is inert by default.
+	import /etc/caddy/conf.d/*.conf
 	import plane_proxy
 }

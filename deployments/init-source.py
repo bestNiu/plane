@@ -59,6 +59,17 @@ def generate(args, password):
             value = value.replace("\\", "\\\\").replace("'", "\\'")
             rows.append(f"{key}='{value}'")
         rendered[path] = "\n".join(rows) + "\n"
+    conf_dir = ROOT / ".deploy/conf.d"
+    conf_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
+    # A TLS proxy in front of Caddy usually forwards Host without the public
+    # port. MinIO signs presigned URLs against Host and Django derives them
+    # from request.get_host(), so Caddy has to restore the full origin.
+    rendered[conf_dir / "public-host.conf"] = (
+        "# Rendered by deployments/init-source.py from --base-url.\n"
+        "# Restores the public origin for every upstream behind Caddy; without\n"
+        "# the port, presigned S3 URLs fail with SignatureDoesNotMatch.\n"
+        f"request_header Host {parsed.netloc}\n"
+    )
     runtime = ROOT / ".deploy"
     runtime.mkdir(mode=0o700, exist_ok=True)
     runtime.chmod(0o700)
@@ -74,7 +85,7 @@ def main():
     parser.add_argument("--db-host", required=True)
     parser.add_argument("--db-name", required=True)
     parser.add_argument("--db-user", required=True)
-    parser.add_argument("--base-url", default="http://192.168.0.238:8090")
+    parser.add_argument("--base-url", default="https://task.unionclin.com:8090")
     parser.add_argument("--sslmode", choices=("disable", "require", "verify-full"), default="require")
     args = parser.parse_args()
     try:
