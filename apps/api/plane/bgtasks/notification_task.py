@@ -34,6 +34,15 @@ from bs4 import BeautifulSoup
 # =========== Issue Description Html Parsing and notification Functions ======================
 
 
+def get_notification_preference(user_id):
+    """Return the notification preference for a user, creating the default (all on) one if absent.
+
+    A missing row must never abort the whole notification batch, so this never raises.
+    """
+    preference, _ = UserNotificationPreference.objects.get_or_create(user_id=user_id)
+    return preference
+
+
 def update_mentions_for_issue(issue, project, new_mentions, removed_mention):
     aggregated_issue_mentions = []
     for mention_id in new_mentions:
@@ -199,9 +208,7 @@ def notifications(
     current_instance,
 ):
     try:
-        issue_activities_created = (
-            json.loads(issue_activities_created) if issue_activities_created is not None else None
-        )
+        issue_activities_created = json.loads(issue_activities_created) if issue_activities_created is not None else []
         if type not in [
             "cycle.activity.created",
             "cycle.activity.deleted",
@@ -316,7 +323,7 @@ def notifications(
                 else:
                     sender = "in_app:issue_activities:subscribed"
 
-                preference = UserNotificationPreference.objects.get(user_id=subscriber)
+                preference = get_notification_preference(subscriber)
 
                 for issue_activity in issue_activities_created:
                     # If activity done in blocking then blocked by email should not go
@@ -464,7 +471,7 @@ def notifications(
 
             for mention_id in comment_mentions:
                 if mention_id != actor_id:
-                    preference = UserNotificationPreference.objects.get(user_id=mention_id)
+                    preference = get_notification_preference(mention_id)
                     for issue_activity in issue_activities_created:
                         notification = create_mention_notification(
                             project=project,
@@ -521,7 +528,7 @@ def notifications(
 
             for mention_id in new_mentions:
                 if mention_id != actor_id:
-                    preference = UserNotificationPreference.objects.get(user_id=mention_id)
+                    preference = get_notification_preference(mention_id)
                     if (
                         last_activity is not None
                         and last_activity.field == "description"
@@ -556,14 +563,10 @@ def notifications(
                                         "new_value": str(last_activity.new_value),
                                         "old_value": str(last_activity.old_value),
                                         "old_identifier": (
-                                            str(issue_activity.get("old_identifier"))
-                                            if issue_activity.get("old_identifier")
-                                            else None
+                                            str(last_activity.old_identifier) if last_activity.old_identifier else None
                                         ),
                                         "new_identifier": (
-                                            str(issue_activity.get("new_identifier"))
-                                            if issue_activity.get("new_identifier")
-                                            else None
+                                            str(last_activity.new_identifier) if last_activity.new_identifier else None
                                         ),
                                     },
                                 },
@@ -593,13 +596,13 @@ def notifications(
                                             "new_value": str(last_activity.new_value),
                                             "old_value": str(last_activity.old_value),
                                             "old_identifier": (
-                                                str(issue_activity.get("old_identifier"))
-                                                if issue_activity.get("old_identifier")
+                                                str(last_activity.old_identifier)
+                                                if last_activity.old_identifier
                                                 else None
                                             ),
                                             "new_identifier": (
-                                                str(issue_activity.get("new_identifier"))
-                                                if issue_activity.get("new_identifier")
+                                                str(last_activity.new_identifier)
+                                                if last_activity.new_identifier
                                                 else None
                                             ),
                                             "activity_time": str(last_activity.created_at),

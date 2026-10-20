@@ -138,6 +138,9 @@ class EmailNotificationLog(BaseModel):
     # sent at
     processed_at = models.DateTimeField(null=True)
     sent_at = models.DateTimeField(null=True)
+    # delivery attempts so far; a failed send is retried until MAX_EMAIL_RETRIES
+    # pi-lens-ignore: reportArgumentType
+    retry_count = models.PositiveSmallIntegerField(default=0)
     entity = models.CharField(max_length=200)
     old_value = models.CharField(max_length=300, blank=True, null=True)
     new_value = models.CharField(max_length=300, blank=True, null=True)

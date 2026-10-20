@@ -7,6 +7,11 @@ x-api: &api
     dockerfile: Dockerfile.api
   env_file: ./apps/api/.env
   restart: unless-stopped
+  # This network has no outbound route, so SMTP goes through the smtp-egress
+  # relay (same namespace as pg-egress). The real host name is pinned instead of
+  # pointing EMAIL_HOST at an IP, so STARTTLS certificate checks still match.
+  extra_hosts:
+    - "smtp.qiye.163.com:172.24.0.4"
   depends_on:
     pg-egress:
       condition: service_started
@@ -24,6 +29,25 @@ services:
     volumes:
       - ./deployments/pg-egress.py:/relay.py:ro
     restart: unless-stopped
+  # SMTP relay. This compose network has no outbound route and the provider only
+  # accepts 587 (465 is blocked), so the relay shares pg-egress's namespace:
+  # that container sits on docker0 (the only network with egress) and on this
+  # network, so it is reachable here and can reach the mail provider.
+  # TLS passes straight through, hence the pinned hostname in extra_hosts.
+  smtp-egress:
+    image: python:3.12-slim
+    network_mode: "service:pg-egress"
+    command: python /relay.py
+    volumes:
+      - ./deployments/smtp-egress.py:/relay.py:ro
+    environment:
+      SMTP_RELAY_HOST: smtp.qiye.163.com
+      SMTP_RELAY_PORT: 587
+      SMTP_RELAY_LISTEN_HOST: 172.24.0.4
+      SMTP_RELAY_LISTEN_PORT: 1587
+    restart: unless-stopped
+    depends_on:
+      - pg-egress
   web:
     build:
       context: .

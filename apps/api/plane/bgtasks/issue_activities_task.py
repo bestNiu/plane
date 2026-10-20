@@ -38,6 +38,16 @@ from plane.utils.issue_relation_mapper import get_inverse_relation
 from plane.utils.uuid import is_valid_uuid
 
 
+def load_json(data):
+    """Decode a JSON payload the worker receives as a string; None-safe and non-throwing."""
+    if data is None:
+        return None
+    try:
+        return json.loads(data)
+    except (TypeError, ValueError):
+        return None
+
+
 def extract_ids(data: dict | None, primary_key: str, fallback_key: str) -> set[str]:
     if not data:
         return set()
@@ -577,8 +587,11 @@ def create_issue_activity(
     issue_activity.created_at = issue.created_at
     issue_activity.actor_id = issue.created_by_id
     issue_activity.save(update_fields=["created_at", "actor_id"])
-    requested_data = json.loads(requested_data) if requested_data is not None else None
-    if requested_data.get("assignee_ids") is not None:
+    requested_data = load_json(requested_data)
+    # The app API sends `assignee_ids`, the external API sends `assignees`; both must
+    # track the assignee activity, otherwise the assignee is never subscribed and gets
+    # no in-app or email notification. `track_assignees` already accepts either key.
+    if requested_data.get("assignee_ids") is not None or requested_data.get("assignees") is not None:
         track_assignees(
             requested_data,
             current_instance,
@@ -621,8 +634,8 @@ def update_issue_activity(
         "labels": track_labels,
     }
 
-    requested_data = json.loads(requested_data) if requested_data is not None else None
-    current_instance = json.loads(current_instance) if current_instance is not None else None
+    requested_data = load_json(requested_data)
+    current_instance = load_json(current_instance)
 
     for key in requested_data:
         func = ISSUE_ACTIVITY_MAPPER.get(key)
@@ -673,8 +686,8 @@ def create_comment_activity(
     issue_activities,
     epoch,
 ):
-    requested_data = json.loads(requested_data) if requested_data is not None else None
-    current_instance = json.loads(current_instance) if current_instance is not None else None
+    requested_data = load_json(requested_data)
+    current_instance = load_json(current_instance)
 
     issue_activities.append(
         IssueActivity(
@@ -703,8 +716,8 @@ def update_comment_activity(
     issue_activities,
     epoch,
 ):
-    requested_data = json.loads(requested_data) if requested_data is not None else None
-    current_instance = json.loads(current_instance) if current_instance is not None else None
+    requested_data = load_json(requested_data)
+    current_instance = load_json(current_instance)
 
     if current_instance.get("comment_html") != requested_data.get("comment_html"):
         issue_activities.append(
@@ -736,7 +749,7 @@ def delete_comment_activity(
     issue_activities,
     epoch,
 ):
-    requested_data = json.loads(requested_data) if requested_data is not None else None
+    requested_data = load_json(requested_data)
     issue_activities.append(
         IssueActivity(
             issue_comment_id=requested_data.get("comment_id", None),
@@ -762,12 +775,12 @@ def create_cycle_issue_activity(
     issue_activities,
     epoch,
 ):
-    requested_data = json.loads(requested_data) if requested_data is not None else None
-    current_instance = json.loads(current_instance) if current_instance is not None else None
+    requested_data = load_json(requested_data)
+    current_instance = load_json(current_instance)
 
     # Updated Records:
     updated_records = current_instance.get("updated_cycle_issues", [])
-    created_records = json.loads(current_instance.get("created_cycle_issues", []))
+    created_records = load_json(current_instance.get("created_cycle_issues", []))
 
     for updated_record in updated_records:
         old_cycle = Cycle.objects.filter(pk=updated_record.get("old_cycle_id", None)).first()
@@ -829,8 +842,8 @@ def delete_cycle_issue_activity(
     issue_activities,
     epoch,
 ):
-    requested_data = json.loads(requested_data) if requested_data is not None else None
-    current_instance = json.loads(current_instance) if current_instance is not None else None
+    requested_data = load_json(requested_data)
+    current_instance = load_json(current_instance)
 
     cycle_id = requested_data.get("cycle_id", "")
     cycle_name = requested_data.get("cycle_name", "")
@@ -868,7 +881,7 @@ def create_module_issue_activity(
     issue_activities,
     epoch,
 ):
-    requested_data = json.loads(requested_data) if requested_data is not None else None
+    requested_data = load_json(requested_data)
     module = Module.objects.filter(pk=requested_data.get("module_id")).first()
     issue = Issue.objects.filter(pk=issue_id).first()
     if issue:
@@ -901,8 +914,8 @@ def delete_module_issue_activity(
     issue_activities,
     epoch,
 ):
-    requested_data = json.loads(requested_data) if requested_data is not None else None
-    current_instance = json.loads(current_instance) if current_instance is not None else None
+    requested_data = load_json(requested_data)
+    current_instance = load_json(current_instance)
     module_name = current_instance.get("module_name")
     current_issue = Issue.objects.filter(pk=issue_id).first()
     if current_issue:
@@ -935,8 +948,8 @@ def create_link_activity(
     issue_activities,
     epoch,
 ):
-    requested_data = json.loads(requested_data) if requested_data is not None else None
-    current_instance = json.loads(current_instance) if current_instance is not None else None
+    requested_data = load_json(requested_data)
+    current_instance = load_json(current_instance)
 
     issue_activities.append(
         IssueActivity(
@@ -964,8 +977,8 @@ def update_link_activity(
     issue_activities,
     epoch,
 ):
-    requested_data = json.loads(requested_data) if requested_data is not None else None
-    current_instance = json.loads(current_instance) if current_instance is not None else None
+    requested_data = load_json(requested_data)
+    current_instance = load_json(current_instance)
 
     if current_instance.get("url") != requested_data.get("url"):
         issue_activities.append(
@@ -996,7 +1009,7 @@ def delete_link_activity(
     issue_activities,
     epoch,
 ):
-    current_instance = json.loads(current_instance) if current_instance is not None else None
+    current_instance = load_json(current_instance)
 
     issue_activities.append(
         IssueActivity(
@@ -1024,8 +1037,8 @@ def create_attachment_activity(
     issue_activities,
     epoch,
 ):
-    requested_data = json.loads(requested_data) if requested_data is not None else None
-    current_instance = json.loads(current_instance) if current_instance is not None else None
+    requested_data = load_json(requested_data)
+    current_instance = load_json(current_instance)
 
     issue_activities.append(
         IssueActivity(
@@ -1077,7 +1090,7 @@ def create_issue_reaction_activity(
     issue_activities,
     epoch,
 ):
-    requested_data = json.loads(requested_data) if requested_data is not None else None
+    requested_data = load_json(requested_data)
     if requested_data and requested_data.get("reaction") is not None:
         issue_reaction = (
             IssueReaction.objects.filter(
@@ -1117,7 +1130,7 @@ def delete_issue_reaction_activity(
     issue_activities,
     epoch,
 ):
-    current_instance = json.loads(current_instance) if current_instance is not None else None
+    current_instance = load_json(current_instance)
     if current_instance and current_instance.get("reaction") is not None:
         issue_activities.append(
             IssueActivity(
@@ -1147,7 +1160,7 @@ def create_comment_reaction_activity(
     issue_activities,
     epoch,
 ):
-    requested_data = json.loads(requested_data) if requested_data is not None else None
+    requested_data = load_json(requested_data)
     if requested_data and requested_data.get("reaction") is not None:
         comment_reaction_id, comment_id = (
             CommentReaction.objects.filter(
@@ -1188,7 +1201,7 @@ def delete_comment_reaction_activity(
     issue_activities,
     epoch,
 ):
-    current_instance = json.loads(current_instance) if current_instance is not None else None
+    current_instance = load_json(current_instance)
     if current_instance and current_instance.get("reaction") is not None:
         issue_id = (
             IssueComment.objects.filter(pk=current_instance.get("comment_id"), project_id=project_id)
@@ -1224,7 +1237,7 @@ def create_issue_vote_activity(
     issue_activities,
     epoch,
 ):
-    requested_data = json.loads(requested_data) if requested_data is not None else None
+    requested_data = load_json(requested_data)
     if requested_data and requested_data.get("vote") is not None:
         issue_activities.append(
             IssueActivity(
@@ -1254,7 +1267,7 @@ def delete_issue_vote_activity(
     issue_activities,
     epoch,
 ):
-    current_instance = json.loads(current_instance) if current_instance is not None else None
+    current_instance = load_json(current_instance)
     if current_instance and current_instance.get("vote") is not None:
         issue_activities.append(
             IssueActivity(
@@ -1284,8 +1297,8 @@ def create_issue_relation_activity(
     issue_activities,
     epoch,
 ):
-    requested_data = json.loads(requested_data) if requested_data is not None else None
-    current_instance = json.loads(current_instance) if current_instance is not None else None
+    requested_data = load_json(requested_data)
+    current_instance = load_json(current_instance)
     if current_instance is None and requested_data.get("issues") is not None:
         for related_issue in requested_data.get("issues"):
             issue = Issue.objects.get(pk=related_issue)
@@ -1333,8 +1346,8 @@ def delete_issue_relation_activity(
     issue_activities,
     epoch,
 ):
-    requested_data = json.loads(requested_data) if requested_data is not None else None
-    current_instance = json.loads(current_instance) if current_instance is not None else None
+    requested_data = load_json(requested_data)
+    current_instance = load_json(current_instance)
     issue = Issue.objects.get(pk=requested_data.get("related_issue"))
     issue_activities.append(
         IssueActivity(
@@ -1411,8 +1424,8 @@ def update_draft_issue_activity(
     issue_activities,
     epoch,
 ):
-    requested_data = json.loads(requested_data) if requested_data is not None else None
-    current_instance = json.loads(current_instance) if current_instance is not None else None
+    requested_data = load_json(requested_data)
+    current_instance = load_json(current_instance)
     if requested_data.get("is_draft") is not None and requested_data.get("is_draft") is False:
         issue_activities.append(
             IssueActivity(
@@ -1473,8 +1486,8 @@ def create_intake_activity(
     issue_activities,
     epoch,
 ):
-    requested_data = json.loads(requested_data) if requested_data is not None else None
-    current_instance = json.loads(current_instance) if current_instance is not None else None
+    requested_data = load_json(requested_data)
+    current_instance = load_json(current_instance)
     status_dict = {
         -2: "Pending",
         -1: "Rejected",
