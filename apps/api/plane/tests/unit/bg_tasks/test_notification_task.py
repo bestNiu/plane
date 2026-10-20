@@ -87,9 +87,7 @@ class TestMentionNotifications:
         )
         # what track_assignees does before the notification task runs
         IssueAssignee.objects.create(issue=issue, project=project, workspace=project.workspace, assignee=assignee)
-        IssueSubscriber.objects.create(
-            issue=issue, project=project, workspace=project.workspace, subscriber=assignee
-        )
+        IssueSubscriber.objects.create(issue=issue, project=project, workspace=project.workspace, subscriber=assignee)
         IssueSubscriber.objects.create(issue=issue, project=project, workspace=project.workspace, subscriber=actor)
 
         notifications(
@@ -129,9 +127,7 @@ class TestMentionNotifications:
             state=State.objects.get(project=project),
         )
         IssueAssignee.objects.create(issue=issue, project=project, workspace=project.workspace, assignee=assignee)
-        IssueSubscriber.objects.create(
-            issue=issue, project=project, workspace=project.workspace, subscriber=assignee
-        )
+        IssueSubscriber.objects.create(issue=issue, project=project, workspace=project.workspace, subscriber=assignee)
 
         notifications(
             type="issue.activity.created",
