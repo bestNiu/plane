@@ -202,9 +202,28 @@ SITE_ID = 1
 AUTH_USER_MODEL = "db.User"
 
 # Database
+# Django's default CONN_MAX_AGE of 0 opens a brand-new PostgreSQL connection for
+# every request. Against a remote RDS reached through the pg-egress relay, any
+# hiccup in that handshake surfaces to the caller as an HTTP 500. Reuse each
+# connection for a while instead, and have Django ping it before reuse so a
+# connection the server dropped is replaced transparently rather than failing
+# the request.
+# Keep CONN_MAX_AGE below the server's idle timeout. Health checks make a stale
+# connection safe, but every reconnect still costs a handshake.
+DB_CONN_MAX_AGE = int(os.environ.get("DB_CONN_MAX_AGE", 300))
+DB_CONN_HEALTH_CHECKS = os.environ.get("DB_CONN_HEALTH_CHECKS", "1") == "1"
+
 if bool(os.environ.get("DATABASE_URL")):
-    # Parse database configuration from $DATABASE_URL
-    DATABASES = {"default": dj_database_url.config()}
+    # Parse database configuration from $DATABASE_URL.
+    # dj_database_url does not read conn_max_age/conn_health_checks from the URL
+    # query string -- unrecognized parameters there end up in OPTIONS and libpq
+    # rejects them -- so they have to be passed as arguments.
+    DATABASES = {
+        "default": dj_database_url.config(
+            conn_max_age=DB_CONN_MAX_AGE,
+            conn_health_checks=DB_CONN_HEALTH_CHECKS,
+        )
+    }
 else:
     DATABASES = {
         "default": {
@@ -214,6 +233,8 @@ else:
             "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
             "HOST": os.environ.get("POSTGRES_HOST"),
             "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+            "CONN_MAX_AGE": DB_CONN_MAX_AGE,
+            "CONN_HEALTH_CHECKS": DB_CONN_HEALTH_CHECKS,
         }
     }
 
@@ -221,7 +242,11 @@ else:
 if os.environ.get("ENABLE_READ_REPLICA", "0") == "1":
     if bool(os.environ.get("DATABASE_READ_REPLICA_URL")):
         # Parse database configuration from $DATABASE_URL
-        DATABASES["replica"] = dj_database_url.parse(os.environ.get("DATABASE_READ_REPLICA_URL"))
+        DATABASES["replica"] = dj_database_url.parse(
+            os.environ.get("DATABASE_READ_REPLICA_URL"),
+            conn_max_age=DB_CONN_MAX_AGE,
+            conn_health_checks=DB_CONN_HEALTH_CHECKS,
+        )
     else:
         DATABASES["replica"] = {
             "ENGINE": "django.db.backends.postgresql",
@@ -230,6 +255,8 @@ if os.environ.get("ENABLE_READ_REPLICA", "0") == "1":
             "PASSWORD": os.environ.get("POSTGRES_READ_REPLICA_PASSWORD"),
             "HOST": os.environ.get("POSTGRES_READ_REPLICA_HOST"),
             "PORT": os.environ.get("POSTGRES_READ_REPLICA_PORT", "5432"),
+            "CONN_MAX_AGE": DB_CONN_MAX_AGE,
+            "CONN_HEALTH_CHECKS": DB_CONN_HEALTH_CHECKS,
         }
 
     # Database Routers

@@ -35,4 +35,13 @@ python manage.py clear_cache
 # Collect static files
 python manage.py collectstatic --noinput
 
-exec gunicorn -w "$GUNICORN_WORKERS" -k uvicorn.workers.UvicornWorker plane.asgi:application --bind 0.0.0.0:"${PORT:-8000}" --max-requests 1200 --max-requests-jitter 1000 --access-logfile -
+# Serve WSGI, not ASGI. Django's ASGI handler wraps every request in its own
+# ThreadSensitiveContext, so each request runs its synchronous views in a fresh
+# thread. Django's connections are thread-local, which means a new PostgreSQL
+# connection is opened for every single request and CONN_MAX_AGE can never take
+# effect. gthread keeps a fixed pool of long-lived threads, so pooled
+# connections are actually reused.
+# Nothing is lost by dropping ASGI: plane.asgi routes only "http" (no websocket
+# consumers) and the app has no async views -- realtime is served by the
+# separate `live` service.
+exec gunicorn -w "$GUNICORN_WORKERS" -k gthread --threads "${GUNICORN_THREADS:-20}" plane.wsgi:application --bind 0.0.0.0:"${PORT:-8000}" --max-requests 1200 --max-requests-jitter 1000 --access-logfile -
